@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import { getAuth } from "firebase/auth";
-import "firebase/compat/firestore";
+import { getFirestore } from "firebase/firestore";
 import "firebase/compat/storage";
 
 const firebaseConfig = {
@@ -13,12 +13,12 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 
 export const firebaseInstance = firebase;
 
 export const authService = getAuth();
 
-export const dbService = firebase.firestore();
+export const dbService = getFirestore(app);
 
 export const storageService = firebase.storage();
