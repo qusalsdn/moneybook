@@ -1,7 +1,6 @@
 import { authService } from "../src/fBase";
 import { signOut } from "firebase/auth";
 import Link from "next/link";
-import Home from "../pages";
 
 const NavBar = () => {
   const onSocialLogout = () => {
