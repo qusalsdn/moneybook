@@ -1,30 +1,65 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Home = () => {
   const [classification, setClassification] = useState("");
+  const [checkedType, setCheckedType] = useState("");
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
   const [day, setDay] = useState("");
-  const [category, setCategory] = useState("");
-  const [money, setMoney] = useState("");
-  const [memo, setMemo] = useState("");
+  const [inputs, setInputs] = useState({
+    category: "",
+    money: "",
+    memo: "",
+  });
   const nowMonth = new Date();
 
-  const onClickClassification = (event: any) => {
+  useEffect(() => {
+    console.log(inputs);
+  }, [inputs]);
+
+  const onChangeClassification = (e: any) => {
     const {
       target: { value },
-    } = event;
+    } = e;
     setClassification(value);
-    console.log(classification);
+    setCheckedType(value);
   };
 
-  const onchangeDate = (event: any) => {
-    console.log(event.target.valueAsDate.getMonth().toString());
+  const onChangeDate = (e: any) => {
+    const {
+      target: { valueAsDate },
+    } = e;
+    setYear(valueAsDate.getFullYear().toString());
+    setMonth((valueAsDate.getMonth() + 1).toString());
+    setDay(valueAsDate.getDate().toString());
   };
 
-  const onsubmit = () => {};
+  const { category, money, memo } = inputs;
+  const onChange = (e: any) => {
+    const { name, value } = e.target;
+    setInputs({
+      ...inputs,
+      [name]: value,
+    });
+  };
+
+  const onClickReset = () => {
+    setCheckedType("");
+    setYear("");
+    setMonth("");
+    setDay("");
+    setInputs({
+      category: "",
+      money: "",
+      memo: "",
+    });
+  };
+
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+  };
 
   return (
     <div
@@ -50,27 +85,39 @@ const Home = () => {
       </div>
 
       <div>
-        <form onSubmit={onsubmit}>
+        <form onSubmit={onSubmit}>
           <div style={{ display: "flex" }}>
             <div>
               <span>분류</span>
-              <input type="radio" value="income" name="classification" onChange={onClickClassification} />
+              <input
+                type="radio"
+                value="income"
+                name="classification"
+                onChange={onChangeClassification}
+                checked={checkedType === "income" ? true : false}
+              />
               <label>수입</label>
-              <input type="radio" value="spending" name="classification" onChange={onClickClassification} />
+              <input
+                type="radio"
+                value="spending"
+                name="classification"
+                onChange={onChangeClassification}
+                checked={checkedType === "spending" ? true : false}
+              />
               <label>지출</label>
             </div>
-            <button type="button" style={{ justifyContent: "end" }}>
+            <button type="button" style={{ justifyContent: "end" }} onClick={onClickReset}>
               초기화
             </button>
           </div>
           <div style={{ display: "flex" }}>
             <div>
               <span>날짜</span>
-              <input type="date" onChange={onchangeDate} />
+              <input type="date" name="date" onChange={onChangeDate} value={`${year}-${month}-${day}`} />
             </div>
             <div>
               <span>카테고리</span>
-              <select name="category" id="category-select">
+              <select name="category" id="category-select" onChange={onChange} value={category}>
                 <option value="">선택하세요</option>
                 <option value="food">식비</option>
                 <option value="cafe">카페/간식</option>
@@ -95,16 +142,16 @@ const Home = () => {
           <div style={{ display: "flex" }}>
             <div>
               <span>금액</span>
-              <input type="text" id="money" />
+              <input type="text" name="money" onChange={onChange} value={money} />
             </div>
             <div>
               <span>메모</span>
-              <input type="text" id="memo" />
+              <input type="text" name="memo" onChange={onChange} value={memo} />
             </div>
           </div>
+          <button type="submit">저장</button>
         </form>
       </div>
-      <button type="submit">저장</button>
     </div>
   );
 };
