@@ -20,7 +20,7 @@ const Router: NextPage<props> = ({ isLoggedIn, userObj }) => {
   // 네이게이션에서 선택한 메뉴에 따라 해당 페이지로 이동하는 함수
   const navBarSelection = () => {
     if (pathName === "/") {
-      return <Home />;
+      return <Home userObj={userObj} />;
     } else if (pathName === "/Calendar") {
       return <Calendar />;
     } else {

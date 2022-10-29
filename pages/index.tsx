@@ -1,13 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { collection, addDoc } from "firebase/firestore";
+import { dbService } from "../src/fBase";
+import { NextPage } from "next";
 
-const Home = () => {
+interface props {
+  userObj: string;
+}
+
+const Home: NextPage<props> = ({ userObj }) => {
   const [classification, setClassification] = useState("");
   const [checkedType, setCheckedType] = useState("");
-  const [year, setYear] = useState("");
-  const [month, setMonth] = useState("");
-  const [day, setDay] = useState("");
+  const [year, setYear] = useState(0);
+  const [month, setMonth] = useState(0);
+  const [day, setDay] = useState(0);
   const [inputs, setInputs] = useState({
     category: "",
     money: "",
@@ -15,9 +22,7 @@ const Home = () => {
   });
   const nowMonth = new Date();
 
-  useEffect(() => {
-    console.log(inputs);
-  }, [inputs]);
+  useEffect(() => {}, []);
 
   const onChangeClassification = (e: any) => {
     const {
@@ -31,9 +36,9 @@ const Home = () => {
     const {
       target: { valueAsDate },
     } = e;
-    setYear(valueAsDate.getFullYear().toString());
-    setMonth((valueAsDate.getMonth() + 1).toString());
-    setDay(valueAsDate.getDate().toString());
+    setYear(valueAsDate.getFullYear());
+    setMonth(valueAsDate.getMonth() + 1);
+    setDay(valueAsDate.getDate());
   };
 
   const { category, money, memo } = inputs;
@@ -47,9 +52,9 @@ const Home = () => {
 
   const onClickReset = () => {
     setCheckedType("");
-    setYear("");
-    setMonth("");
-    setDay("");
+    setYear(0);
+    setMonth(0);
+    setDay(0);
     setInputs({
       category: "",
       money: "",
@@ -57,8 +62,29 @@ const Home = () => {
     });
   };
 
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     e.preventDefault();
+    await addDoc(collection(dbService, "details"), {
+      userId: userObj,
+      classification: classification,
+      date: {
+        year: year,
+        month: month,
+        day: day,
+      },
+      category: category,
+      money: money,
+      memo: memo,
+    });
+    setCheckedType("");
+    setYear(0);
+    setMonth(0);
+    setDay(0);
+    setInputs({
+      category: "",
+      money: "",
+      memo: "",
+    });
   };
 
   return (
@@ -151,6 +177,10 @@ const Home = () => {
           </div>
           <button type="submit">저장</button>
         </form>
+      </div>
+      <hr style={{ width: "100%", opacity: "0.5" }} />
+      <div style={{ width: "100%" }}>
+        <hr style={{ width: "100%", opacity: "0.5" }} />
       </div>
     </div>
   );
