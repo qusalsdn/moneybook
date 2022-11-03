@@ -37,6 +37,7 @@ const Home: NextPage<props> = ({ userObj }) => {
   }); // input 값의 '카테고리', '금액', '메모'
   const [newYear, setNewYear] = useState(0); // 페이지에 보여지는 동적인 '년도'
   const [newMonth, setNewMonth] = useState(0); // 페이지에 보여지는 동적인 '월'
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const q = query(collection(dbService, userObj), where("year", "==", newYear), where("month", "==", newMonth));
@@ -47,6 +48,7 @@ const Home: NextPage<props> = ({ userObj }) => {
     // 처음 랜더링 될 때 초기값으로 '해당년도'의 값을 넣어준다.
     setNewYear(firstYear);
     setNewMonth(firstMonth);
+    setLoading(false);
   }, []);
 
   // 페이지에서 동적으로 '월'를 변경할 때 해당 '월'에 대한 가계부 내역을 가져온다.
@@ -56,8 +58,7 @@ const Home: NextPage<props> = ({ userObj }) => {
       const newDetail = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
       setDetails(newDetail);
     });
-
-    console.log(newYear, newMonth);
+    setLoading(false);
   }, [newYear, newMonth]);
 
   // 해당 '월'에 대한 가계부 내역을 출력해주는 함수
@@ -149,6 +150,14 @@ const Home: NextPage<props> = ({ userObj }) => {
     }
   };
 
+  // 현재날짜로 이동시켜주는 함수
+  const onClickNowDate = () => {
+    setNewYear(firstYear);
+    setNewMonth(firstMonth);
+    countYear = firstYear;
+    countMonth = firstMonth;
+  };
+
   // 초기화 버튼을 클릭하면 모든 값을 초기화하는 함수
   const onClickReset = () => {
     setCheckedType("");
@@ -232,6 +241,7 @@ const Home: NextPage<props> = ({ userObj }) => {
                   }
                 } else {
                   setNewMonth(countMonth);
+                  setLoading(true);
                 }
               }}
             />
@@ -261,6 +271,7 @@ const Home: NextPage<props> = ({ userObj }) => {
                   }
                 } else {
                   setNewMonth(countMonth);
+                  setLoading(true);
                 }
               }}
             />
@@ -268,7 +279,6 @@ const Home: NextPage<props> = ({ userObj }) => {
         </div>
         <div>
           <select name="month" onChange={onChangeMonth} value={`${newYear}-${newMonth}`}>
-            <option value="">상세조회</option>
             <option value="2020-1">2020년 1월</option>
             <option value="2020-2">2020년 2월</option>
             <option value="2020-3">2020년 3월</option>
@@ -318,6 +328,9 @@ const Home: NextPage<props> = ({ userObj }) => {
             <option value="2023-11">2023년 11월</option>
             <option value="2023-12">2023년 12월</option>
           </select>
+          <button type="button" onClick={onClickNowDate}>
+            현재날짜로 이동
+          </button>
         </div>
       </div>
 
@@ -405,7 +418,9 @@ const Home: NextPage<props> = ({ userObj }) => {
         </form>
       </div>
       <hr style={{ height: "5px", backgroundColor: "gray", opacity: "0.5", border: "0px" }} />
-      <div style={{ width: "100%" }}>{createDetail()}</div>
+      <div style={{ width: "100%" }}>
+        {loading ? <h1 style={{ fontSize: "20px", fontWeight: "bold" }}>Loading...</h1> : createDetail()}
+      </div>
     </div>
   );
 };
