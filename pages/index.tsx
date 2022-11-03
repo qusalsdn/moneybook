@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, onSnapshot, getDocs } from "firebase/firestore";
 import { dbService } from "../src/fBase";
 import { NextPage } from "next";
 
@@ -9,21 +9,100 @@ interface props {
   userObj: string;
 }
 
+const nowDate = new Date();
+
+let firstYear = nowDate.getFullYear();
+let firstMonth = nowDate.getMonth() + 1;
+
+// 페이지의 기능을 통해 날짜가 변경될 때마다 동적으로 값을 변경하기 위해 선언
+let countYear = nowDate.getFullYear();
+let countMonth = nowDate.getMonth() + 1;
+const week = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+// 가계부 내역을 저장했을 때 저장한 해당 '년도'와 '월'로 이동하기 위해 선언
+let afterYear = 0;
+let afterMonth = 0;
+
 const Home: NextPage<props> = ({ userObj }) => {
-  const [classification, setClassification] = useState("");
+  const [details, setDetails] = useState<any[]>([]); // 로그인한 id의 가계부 내역
+  const [classification, setClassification] = useState(""); // 카테고리 선택에 따른 값
+  // 초기화 및 가계부 내역을 추가할 때 라디오 버튼의 체크가 해제 되어야 하는데 그것을 확인하는 유무
   const [checkedType, setCheckedType] = useState("");
-  const [year, setYear] = useState(0);
-  const [month, setMonth] = useState(0);
-  const [day, setDay] = useState(0);
+  const [year, setYear] = useState(0); // input 값의 '년도'
+  const [month, setMonth] = useState(0); // input 값의 '월'
+  const [day, setDay] = useState(0); // input 값의 '일'
   const [inputs, setInputs] = useState({
     category: "",
     money: "",
     memo: "",
-  });
-  const nowMonth = new Date();
+  }); // input 값의 '카테고리', '금액', '메모'
+  const [newYear, setNewYear] = useState(0); // 페이지에 보여지는 동적인 '년도'
+  const [newMonth, setNewMonth] = useState(0); // 페이지에 보여지는 동적인 '월'
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const q = query(collection(dbService, userObj), where("year", "==", newYear), where("month", "==", newMonth));
+    onSnapshot(q, (querySnapshot) => {
+      const newDetail = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+      setDetails(newDetail);
+    });
+    // 처음 랜더링 될 때 초기값으로 '해당년도'의 값을 넣어준다.
+    setNewYear(firstYear);
+    setNewMonth(firstMonth);
+  }, []);
 
+  // 페이지에서 동적으로 '월'를 변경할 때 해당 '월'에 대한 가계부 내역을 가져온다.
+  useEffect(() => {
+    const q = query(collection(dbService, userObj), where("year", "==", newYear), where("month", "==", newMonth));
+    onSnapshot(q, (querySnapshot) => {
+      const newDetail = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+      setDetails(newDetail);
+    });
+
+    console.log(newYear, newMonth);
+  }, [newYear, newMonth]);
+
+  // 해당 '월'에 대한 가계부 내역을 출력해주는 함수
+  const createDetail = () => {
+    let render: any = [];
+    const days: any = [];
+
+    // 가계부 내역에 있는 '일(day)'의 중복을 제거하고 오름차순으로 정렬
+    details.forEach((detail) => {
+      days.push(detail.day);
+    });
+    const newDays = Array.from(new Set(days));
+    newDays.sort();
+
+    // 해당 정렬된 '일(day)' 별로 가계부 내역을 출력해준다.
+    newDays.forEach((day) => {
+      const dayOfWeek = week[new Date(`${newYear}-${newMonth}-${day}`).getDay()];
+      render.push(
+        <>
+          <div>
+            <h1 style={{ fontSize: "20px", fontWeight: "bold", marginTop: "20px" }}>
+              {`${newYear}-${newMonth}-${day}`} {dayOfWeek}
+            </h1>
+            <hr />
+            {details.map((detail) => {
+              if (day === detail.day) {
+                return (
+                  <>
+                    <div>
+                      <span>{detail.category} </span>
+                      <span>{detail.memo} </span>
+                      <span>{detail.classification === "income" ? `+${detail.money}` : `-${detail.money}`} </span>
+                    </div>
+                  </>
+                );
+              }
+            })}
+          </div>
+        </>
+      );
+    });
+    return render;
+  };
+
+  // 카테고리 값이 바뀔 때마다 카테고리 값과 라디오 버튼 체크 유무 값을 변경하는 함수
   const onChangeClassification = (e: any) => {
     const {
       target: { value },
@@ -32,6 +111,7 @@ const Home: NextPage<props> = ({ userObj }) => {
     setCheckedType(value);
   };
 
+  // 날짜 값이 바뀔 때마다 값을 변경하는 함수
   const onChangeDate = (e: any) => {
     const {
       target: { valueAsDate },
@@ -39,8 +119,11 @@ const Home: NextPage<props> = ({ userObj }) => {
     setYear(valueAsDate.getFullYear());
     setMonth(valueAsDate.getMonth() + 1);
     setDay(valueAsDate.getDate());
+    afterYear = valueAsDate.getFullYear();
+    afterMonth = valueAsDate.getMonth() + 1;
   };
 
+  // 카테고리, 금액, 메모 값이 바뀔 때마다 값을 변경하는 함수
   const { category, money, memo } = inputs;
   const onChange = (e: any) => {
     const { name, value } = e.target;
@@ -50,6 +133,23 @@ const Home: NextPage<props> = ({ userObj }) => {
     });
   };
 
+  // 날짜 상세조회 값이 바뀔 때마다 값을 변경하는 함수
+  const onChangeMonth = (e: any) => {
+    const {
+      target: { value },
+    } = e;
+    if (value != "") {
+      const date = value.split("-");
+      setNewYear(Number(date[0]));
+      setNewMonth(Number(date[1]));
+      countYear = Number(date[0]);
+      countMonth = Number(date[1]);
+      afterYear = Number(date[0]);
+      afterMonth = Number(date[1]);
+    }
+  };
+
+  // 초기화 버튼을 클릭하면 모든 값을 초기화하는 함수
   const onClickReset = () => {
     setCheckedType("");
     setYear(0);
@@ -62,19 +162,19 @@ const Home: NextPage<props> = ({ userObj }) => {
     });
   };
 
+  // 저장 버튼을 누르면 DB에 값을 저장하고 저장한 '년도' 및 '달'로 이동하는 함수
   const onSubmit = async (e: any) => {
     e.preventDefault();
-    await addDoc(collection(dbService, "details"), {
+    await addDoc(collection(dbService, userObj), {
       userId: userObj,
       classification: classification,
-      date: {
-        year: year,
-        month: month,
-        day: day,
-      },
+      year: year,
+      month: month,
+      day: day,
       category: category,
       money: money,
       memo: memo,
+      createAt: Date.now(),
     });
     setCheckedType("");
     setYear(0);
@@ -85,6 +185,10 @@ const Home: NextPage<props> = ({ userObj }) => {
       money: "",
       memo: "",
     });
+    setNewYear(afterYear);
+    setNewMonth(afterMonth);
+    countYear = afterYear;
+    countMonth = afterMonth;
   };
 
   return (
@@ -99,10 +203,122 @@ const Home: NextPage<props> = ({ userObj }) => {
         margin: "80px auto 0px",
       }}
     >
-      <div>
-        <FontAwesomeIcon icon={faArrowLeft} />
-        <span>{(nowMonth.getMonth() + 1).toString()}</span>
-        <FontAwesomeIcon icon={faArrowRight} />
+      <div style={{ display: "flex" }}>
+        <div>
+          <div>
+            <h1>{newYear}</h1>
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              onClick={() => {
+                let nextCheck = true;
+                --countMonth;
+
+                if (countMonth < 1) {
+                  --countYear;
+                  if (countYear < 2020) {
+                    alert("2020년 이전의 기록은 기록할 수 없습니다.");
+                    setNewYear(2020);
+                    setNewMonth(1);
+                    countYear = 2020;
+                    countMonth = 1;
+                    nextCheck = false;
+                  } else {
+                    setNewYear(countYear);
+                  }
+
+                  if (nextCheck) {
+                    setNewMonth(12);
+                    countMonth = 12;
+                  }
+                } else {
+                  setNewMonth(countMonth);
+                }
+              }}
+            />
+            <span>{newMonth}</span>
+            <FontAwesomeIcon
+              icon={faArrowRight}
+              onClick={() => {
+                let nextCheck = true;
+                ++countMonth;
+
+                if (countMonth > 12) {
+                  ++countYear;
+                  if (countYear > 2023) {
+                    alert("2023년 이후의 기록은 기록할 수 없습니다.");
+                    setNewYear(2023);
+                    setMonth(12);
+                    countYear = 2023;
+                    countMonth = 12;
+                    nextCheck = false;
+                  } else {
+                    setNewYear(countYear);
+                  }
+
+                  if (nextCheck) {
+                    setNewMonth(1);
+                    countMonth = 1;
+                  }
+                } else {
+                  setNewMonth(countMonth);
+                }
+              }}
+            />
+          </div>
+        </div>
+        <div>
+          <select name="month" onChange={onChangeMonth} value={`${newYear}-${newMonth}`}>
+            <option value="">상세조회</option>
+            <option value="2020-1">2020년 1월</option>
+            <option value="2020-2">2020년 2월</option>
+            <option value="2020-3">2020년 3월</option>
+            <option value="2020-4">2020년 4월</option>
+            <option value="2020-5">2020년 5월</option>
+            <option value="2020-6">2020년 6월</option>
+            <option value="2020-7">2020년 7월</option>
+            <option value="2020-8">2020년 8월</option>
+            <option value="2020-9">2020년 9월</option>
+            <option value="2020-10">2020년 10월</option>
+            <option value="2020-11">2020년 11월</option>
+            <option value="2020-12">2020년 12월</option>
+            <option value="2021-1">2021년 1월</option>
+            <option value="2021-2">2021년 2월</option>
+            <option value="2021-3">2021년 3월</option>
+            <option value="2021-4">2021년 4월</option>
+            <option value="2021-5">2021년 5월</option>
+            <option value="2021-6">2021년 6월</option>
+            <option value="2021-7">2021년 7월</option>
+            <option value="2021-8">2021년 8월</option>
+            <option value="2021-9">2021년 9월</option>
+            <option value="2021-10">2021년 10월</option>
+            <option value="2021-11">2021년 11월</option>
+            <option value="2021-12">2021년 12월</option>
+            <option value="2022-1">2022년 1월</option>
+            <option value="2022-2">2022년 2월</option>
+            <option value="2022-3">2022년 3월</option>
+            <option value="2022-4">2022년 4월</option>
+            <option value="2022-5">2022년 5월</option>
+            <option value="2022-6">2022년 6월</option>
+            <option value="2022-7">2022년 7월</option>
+            <option value="2022-8">2022년 8월</option>
+            <option value="2022-9">2022년 9월</option>
+            <option value="2022-10">2022년 10월</option>
+            <option value="2022-11">2022년 11월</option>
+            <option value="2022-12">2022년 12월</option>
+            <option value="2023-1">2023년 1월</option>
+            <option value="2023-2">2023년 2월</option>
+            <option value="2023-3">2023년 3월</option>
+            <option value="2023-4">2023년 4월</option>
+            <option value="2023-5">2023년 5월</option>
+            <option value="2023-6">2023년 6월</option>
+            <option value="2023-7">2023년 7월</option>
+            <option value="2023-8">2023년 8월</option>
+            <option value="2023-9">2023년 9월</option>
+            <option value="2023-10">2023년 10월</option>
+            <option value="2023-11">2023년 11월</option>
+            <option value="2023-12">2023년 12월</option>
+          </select>
+        </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -121,6 +337,7 @@ const Home: NextPage<props> = ({ userObj }) => {
                 name="classification"
                 onChange={onChangeClassification}
                 checked={checkedType === "income" ? true : false}
+                required
               />
               <label>수입</label>
               <input
@@ -129,6 +346,7 @@ const Home: NextPage<props> = ({ userObj }) => {
                 name="classification"
                 onChange={onChangeClassification}
                 checked={checkedType === "spending" ? true : false}
+                required
               />
               <label>지출</label>
             </div>
@@ -139,11 +357,19 @@ const Home: NextPage<props> = ({ userObj }) => {
           <div style={{ display: "flex" }}>
             <div>
               <span>날짜</span>
-              <input type="date" name="date" onChange={onChangeDate} value={`${year}-${month}-${day}`} />
+              <input
+                type="date"
+                min="2020-01-01"
+                max="2023-12-31"
+                name="date"
+                onChange={onChangeDate}
+                value={`${year}-${month < 10 ? `0${month}` : `${month}`}-${day < 10 ? `0${day}` : `${day}`}`}
+                required
+              />
             </div>
             <div>
               <span>카테고리</span>
-              <select name="category" id="category-select" onChange={onChange} value={category}>
+              <select name="category" id="category-select" onChange={onChange} value={category} required>
                 <option value="">선택하세요</option>
                 <option value="food">식비</option>
                 <option value="cafe">카페/간식</option>
@@ -168,20 +394,18 @@ const Home: NextPage<props> = ({ userObj }) => {
           <div style={{ display: "flex" }}>
             <div>
               <span>금액</span>
-              <input type="text" name="money" onChange={onChange} value={money} />
+              <input type="text" name="money" onChange={onChange} value={money} required />
             </div>
             <div>
               <span>메모</span>
-              <input type="text" name="memo" onChange={onChange} value={memo} />
+              <input type="text" name="memo" onChange={onChange} value={memo} required />
             </div>
           </div>
           <button type="submit">저장</button>
         </form>
       </div>
-      <hr style={{ width: "100%", opacity: "0.5" }} />
-      <div style={{ width: "100%" }}>
-        <hr style={{ width: "100%", opacity: "0.5" }} />
-      </div>
+      <hr style={{ height: "5px", backgroundColor: "gray", opacity: "0.5", border: "0px" }} />
+      <div style={{ width: "100%" }}>{createDetail()}</div>
     </div>
   );
 };

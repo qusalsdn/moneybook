@@ -21,6 +21,7 @@ const Layout: NextPage<props> = ({ children }) => {
         setUserObj(user.uid);
       } else {
         setIsLoggedIn(false);
+        setInit(true);
         setUserObj(null);
       }
     });

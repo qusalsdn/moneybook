@@ -135,3 +135,9 @@ input {
   border-bottom: 1px solid gray;
   outline: none;
 }
+
+hr {
+  width: 100%;
+  opacity: 0.5;
+  color: gray;
+}
