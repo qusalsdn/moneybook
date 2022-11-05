@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { ReactElement, useEffect, useState } from "react";
 import { authService } from "../src/fBase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -32,9 +34,14 @@ const Layout: NextPage<props> = ({ children }) => {
       {init ? (
         <Router isLoggedIn={isLoggedIn} userObj={userObj} />
       ) : (
-        <h1 style={{ display: "flex", justifyContent: "center", fontSize: "20px", fontWeight: "bold", marginTop: "30px" }}>
-          Loading.....
-        </h1>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100vh" }}>
+          <FontAwesomeIcon
+            icon={faSpinner}
+            style={{
+              fontSize: "100px",
+            }}
+          />
+        </div>
       )}
     </>
   );

@@ -141,3 +141,33 @@ hr {
   opacity: 0.5;
   color: gray;
 }
+
+.updateWindowVisible {
+  animation: fadeIn 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.updateWindowHidden {
+  animation: fadeOut 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.test:hover {
+  font-size: 18px;
+}

@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { collection, addDoc, query, where, onSnapshot, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 import { dbService } from "../src/fBase";
 import { NextPage } from "next";
 
@@ -38,6 +38,9 @@ const Home: NextPage<props> = ({ userObj }) => {
   const [newYear, setNewYear] = useState(0); // 페이지에 보여지는 동적인 '년도'
   const [newMonth, setNewMonth] = useState(0); // 페이지에 보여지는 동적인 '월'
   const [loading, setLoading] = useState(true);
+  // 수정할 때 페이지 애니메이션을 위해 선언
+  const [visibility, setVisibility] = useState(false);
+  const [changeClassName, setChangeClassName] = useState("");
 
   useEffect(() => {
     const q = query(collection(dbService, userObj), where("year", "==", newYear), where("month", "==", newMonth));
@@ -60,6 +63,10 @@ const Home: NextPage<props> = ({ userObj }) => {
     });
     setLoading(false);
   }, [newYear, newMonth]);
+
+  useEffect(() => {
+    console.log(year, month, day);
+  }, [year, month, day]);
 
   // 해당 '월'에 대한 가계부 내역을 출력해주는 함수
   const createDetail = () => {
@@ -87,11 +94,28 @@ const Home: NextPage<props> = ({ userObj }) => {
               if (day === detail.day) {
                 return (
                   <>
-                    <div>
+                    <div
+                      onClick={() => {
+                        setVisibility(true);
+                        setChangeClassName("updateWindowVisible");
+                        setInputs({
+                          ...inputs,
+                          ["money"]: detail.money,
+                          ["category"]: detail.category,
+                          ["memo"]: detail.memo,
+                        });
+                        setCheckedType(detail.classification);
+                        setYear(detail.year);
+                        setMonth(detail.month);
+                        setDay(detail.day);
+                      }}
+                      className="test"
+                    >
                       <span>{detail.category} </span>
                       <span>{detail.memo} </span>
                       <span>{detail.classification === "income" ? `+${detail.money}` : `-${detail.money}`} </span>
                     </div>
+                    <hr />
                   </>
                 );
               }
@@ -139,15 +163,17 @@ const Home: NextPage<props> = ({ userObj }) => {
     const {
       target: { value },
     } = e;
-    if (value != "") {
-      const date = value.split("-");
-      setNewYear(Number(date[0]));
-      setNewMonth(Number(date[1]));
-      countYear = Number(date[0]);
-      countMonth = Number(date[1]);
-      afterYear = Number(date[0]);
-      afterMonth = Number(date[1]);
-    }
+    const date = value.split("-");
+    setNewYear(Number(date[0]));
+    setNewMonth(Number(date[1]));
+    countYear = Number(date[0]);
+    countMonth = Number(date[1]);
+    afterYear = Number(date[0]);
+    afterMonth = Number(date[1]);
+    setChangeClassName("updateWindowHidden");
+    setTimeout(() => {
+      setVisibility(false);
+    }, 400);
   };
 
   // 현재날짜로 이동시켜주는 함수
@@ -156,6 +182,10 @@ const Home: NextPage<props> = ({ userObj }) => {
     setNewMonth(firstMonth);
     countYear = firstYear;
     countMonth = firstMonth;
+    setChangeClassName("updateWindowHidden");
+    setTimeout(() => {
+      setVisibility(false);
+    }, 400);
   };
 
   // 초기화 버튼을 클릭하면 모든 값을 초기화하는 함수
@@ -243,6 +273,10 @@ const Home: NextPage<props> = ({ userObj }) => {
                   setNewMonth(countMonth);
                   setLoading(true);
                 }
+                setChangeClassName("updateWindowHidden");
+                setTimeout(() => {
+                  setVisibility(false);
+                }, 400);
               }}
             />
             <span>{newMonth}</span>
@@ -273,6 +307,10 @@ const Home: NextPage<props> = ({ userObj }) => {
                   setNewMonth(countMonth);
                   setLoading(true);
                 }
+                setChangeClassName("updateWindowHidden");
+                setTimeout(() => {
+                  setVisibility(false);
+                }, 400);
               }}
             />
           </div>
@@ -329,7 +367,7 @@ const Home: NextPage<props> = ({ userObj }) => {
             <option value="2023-12">2023년 12월</option>
           </select>
           <button type="button" onClick={onClickNowDate}>
-            현재날짜로 이동
+            현재 달로 이동
           </button>
         </div>
       </div>
@@ -419,8 +457,109 @@ const Home: NextPage<props> = ({ userObj }) => {
       </div>
       <hr style={{ height: "5px", backgroundColor: "gray", opacity: "0.5", border: "0px" }} />
       <div style={{ width: "100%" }}>
-        {loading ? <h1 style={{ fontSize: "20px", fontWeight: "bold" }}>Loading...</h1> : createDetail()}
+        {loading ? (
+          <FontAwesomeIcon
+            icon={faSpinner}
+            style={{ width: "100%", justifyContent: "center", fontSize: "50px", fontWeight: "bold", marginTop: "50px" }}
+          />
+        ) : (
+          createDetail()
+        )}
       </div>
+
+      {visibility && (
+        <div
+          className={`${changeClassName}`}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            position: "fixed",
+            bottom: "50px",
+            width: "500px",
+            height: "500px",
+            backgroundColor: "gray",
+            borderRadius: "20px",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+            <FontAwesomeIcon
+              icon={faXmark}
+              style={{ marginRight: "15px", marginTop: "10px" }}
+              onClick={() => {
+                setChangeClassName("updateWindowHidden");
+                setTimeout(() => {
+                  setVisibility(false);
+                }, 400);
+              }}
+            />
+          </div>
+          <div>
+            <form>
+              <input type="text" name="money" onChange={onChange} value={money} required />
+              <div>
+                <span>분류</span>
+                <input
+                  type="radio"
+                  value="income"
+                  name="classification"
+                  onChange={onChangeClassification}
+                  checked={checkedType === "income" ? true : false}
+                  required
+                />
+                <label>수입</label>
+                <input
+                  type="radio"
+                  value="spending"
+                  name="classification"
+                  onChange={onChangeClassification}
+                  checked={checkedType === "spending" ? true : false}
+                  required
+                />
+                <label>지출</label>
+              </div>
+              <div>
+                <span>날짜</span>
+                <input
+                  type="date"
+                  min="2020-01-01"
+                  max="2023-12-31"
+                  name="date"
+                  onChange={onChangeDate}
+                  value={`${year}-${month < 10 ? `0${month}` : `${month}`}-${day < 10 ? `0${day}` : `${day}`}`}
+                  required
+                />
+              </div>
+              <div>
+                <span>카테고리</span>
+                <select name="category" id="category-select" onChange={onChange} value={category} required>
+                  <option value="">선택하세요</option>
+                  <option value="food">식비</option>
+                  <option value="cafe">카페/간식</option>
+                  <option value="alcohol">술/유흥</option>
+                  <option value="life">생활</option>
+                  <option value="shopping">쇼핑</option>
+                  <option value="beauty">뷰티/미용</option>
+                  <option value="traffic">교통</option>
+                  <option value="car">자동차</option>
+                  <option value="residence">주거/통신</option>
+                  <option value="medical">의료/건상</option>
+                  <option value="banking">금융</option>
+                  <option value="leisure">문화/여가</option>
+                  <option value="travel">여행/숙바</option>
+                  <option value="education">교육/학습</option>
+                  <option value="parenting">자녀/육아</option>
+                  <option value="pets">반려동물</option>
+                  <option value="gift">경조/선물</option>
+                </select>
+              </div>
+              <div>
+                <span>메모</span>
+                <input type="text" name="memo" onChange={onChange} value={memo} required />
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
