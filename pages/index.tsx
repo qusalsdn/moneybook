@@ -250,12 +250,12 @@ const Home: NextPage<props> = ({ userObj }) => {
     const ok = window.confirm("정말 가계부 내역을 삭제하시겠습니까?");
     if (ok) {
       await deleteDoc(doc(dbService, userObj, fieldId));
+      setChangeClassName("updateWindowHidden");
+      setTimeout(() => {
+        setVisibility(false);
+      }, 400);
+      onClickReset();
     }
-    setChangeClassName("updateWindowHidden");
-    setTimeout(() => {
-      setVisibility(false);
-    }, 400);
-    onClickReset();
   };
 
   return (
