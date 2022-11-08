@@ -64,10 +64,6 @@ const Home: NextPage<props> = ({ userObj }) => {
     setLoading(false);
   }, [newYear, newMonth]);
 
-  useEffect(() => {
-    console.log(year, month, day);
-  }, [year, month, day]);
-
   // 해당 '월'에 대한 가계부 내역을 출력해주는 함수
   const createDetail = () => {
     let render: any = [];
@@ -237,7 +233,7 @@ const Home: NextPage<props> = ({ userObj }) => {
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        width: "100%",
+        width: "100vw",
         maxWidth: "890px",
         margin: "80px auto 0px",
       }}
@@ -420,7 +416,14 @@ const Home: NextPage<props> = ({ userObj }) => {
             </div>
             <div>
               <span>카테고리</span>
-              <select name="category" id="category-select" onChange={onChange} value={category} required>
+              <select
+                name="category"
+                id="category-select"
+                onChange={onChange}
+                value={category}
+                required
+                style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+              >
                 <option value="">선택하세요</option>
                 <option value="food">식비</option>
                 <option value="cafe">카페/간식</option>
@@ -456,6 +459,7 @@ const Home: NextPage<props> = ({ userObj }) => {
         </form>
       </div>
       <hr style={{ height: "5px", backgroundColor: "gray", opacity: "0.5", border: "0px" }} />
+
       <div style={{ width: "100%" }}>
         {loading ? (
           <FontAwesomeIcon
@@ -475,8 +479,8 @@ const Home: NextPage<props> = ({ userObj }) => {
             flexDirection: "column",
             position: "fixed",
             bottom: "50px",
-            width: "500px",
-            height: "500px",
+            width: "25vw",
+            height: "50vh",
             backgroundColor: "gray",
             borderRadius: "20px",
           }}
@@ -493,6 +497,7 @@ const Home: NextPage<props> = ({ userObj }) => {
               }}
             />
           </div>
+
           <div>
             <form>
               <input type="text" name="money" onChange={onChange} value={money} required />
