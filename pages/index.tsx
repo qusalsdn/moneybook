@@ -479,8 +479,8 @@ const Home: NextPage<props> = ({ userObj }) => {
             flexDirection: "column",
             position: "fixed",
             bottom: "50px",
-            width: "25vw",
-            height: "50vh",
+            width: "400px",
+            height: "400px",
             backgroundColor: "gray",
             borderRadius: "20px",
           }}
