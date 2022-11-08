@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faSpinner, faXmark, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, query, where, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../src/fBase";
 import { NextPage } from "next";
 
@@ -41,11 +41,12 @@ const Home: NextPage<props> = ({ userObj }) => {
   // 수정할 때 페이지 애니메이션을 위해 선언
   const [visibility, setVisibility] = useState(false);
   const [changeClassName, setChangeClassName] = useState("");
+  const [fieldId, setFieldId] = useState("");
 
   useEffect(() => {
     const q = query(collection(dbService, userObj), where("year", "==", newYear), where("month", "==", newMonth));
     onSnapshot(q, (querySnapshot) => {
-      const newDetail = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+      const newDetail = querySnapshot.docs.map((doc) => ({ fieldId: doc.id, ...doc.data() }));
       setDetails(newDetail);
     });
     // 처음 랜더링 될 때 초기값으로 '해당년도'의 값을 넣어준다.
@@ -58,7 +59,7 @@ const Home: NextPage<props> = ({ userObj }) => {
   useEffect(() => {
     const q = query(collection(dbService, userObj), where("year", "==", newYear), where("month", "==", newMonth));
     onSnapshot(q, (querySnapshot) => {
-      const newDetail = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+      const newDetail = querySnapshot.docs.map((doc) => ({ fieldId: doc.id, ...doc.data() }));
       setDetails(newDetail);
     });
     setLoading(false);
@@ -92,6 +93,7 @@ const Home: NextPage<props> = ({ userObj }) => {
                   <>
                     <div
                       onClick={() => {
+                        setFieldId(detail.fieldId);
                         setVisibility(true);
                         setChangeClassName("updateWindowVisible");
                         setInputs({
@@ -201,7 +203,6 @@ const Home: NextPage<props> = ({ userObj }) => {
   const onSubmit = async (e: any) => {
     e.preventDefault();
     await addDoc(collection(dbService, userObj), {
-      userId: userObj,
       classification: classification,
       year: year,
       month: month,
@@ -224,6 +225,37 @@ const Home: NextPage<props> = ({ userObj }) => {
     setNewMonth(afterMonth);
     countYear = afterYear;
     countMonth = afterMonth;
+  };
+
+  const onSubmitUpdate = async (e: any) => {
+    e.preventDefault();
+    const q = doc(dbService, userObj, fieldId);
+    await updateDoc(q, {
+      money: money,
+      classification: classification,
+      year: year,
+      month: month,
+      day: day,
+      category: category,
+      memo: memo,
+    });
+    setChangeClassName("updateWindowHidden");
+    setTimeout(() => {
+      setVisibility(false);
+    }, 400);
+    onClickReset();
+  };
+
+  const onClickDelete = async () => {
+    const ok = window.confirm("정말 가계부 내역을 삭제하시겠습니까?");
+    if (ok) {
+      await deleteDoc(doc(dbService, userObj, fieldId));
+    }
+    setChangeClassName("updateWindowHidden");
+    setTimeout(() => {
+      setVisibility(false);
+    }, 400);
+    onClickReset();
   };
 
   return (
@@ -494,12 +526,13 @@ const Home: NextPage<props> = ({ userObj }) => {
                 setTimeout(() => {
                   setVisibility(false);
                 }, 400);
+                onClickReset();
               }}
             />
           </div>
 
           <div>
-            <form>
+            <form onSubmit={onSubmitUpdate}>
               <input type="text" name="money" onChange={onChange} value={money} required />
               <div>
                 <span>분류</span>
@@ -560,6 +593,14 @@ const Home: NextPage<props> = ({ userObj }) => {
               <div>
                 <span>메모</span>
                 <input type="text" name="memo" onChange={onChange} value={memo} required />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "150px" }}>
+                <button type="button" onClick={onClickDelete}>
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </button>
+                <button type="submit" style={{ padding: "20px", backgroundColor: "tomato" }}>
+                  저장
+                </button>
               </div>
             </form>
           </div>
