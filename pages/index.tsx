@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { collection, addDoc, query, where, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../src/fBase";
 import { NextPage } from "next";
+import Link from "next/link";
 
 interface props {
   userObj: string;
@@ -400,9 +401,16 @@ const Home: NextPage<props> = ({ userObj }) => {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span>지출 </span>
-        <span>수입 </span>
+      <div style={{ display: "flex" }}>
+        <div>
+          <span>지출 </span>
+          <span>수입 </span>
+        </div>
+        <div>
+          <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>
+            <button>분석</button>
+          </Link>
+        </div>
       </div>
 
       <div>

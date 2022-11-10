@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import NavBar from "./NavBar";
 import { useRouter } from "next/router";
 import Calendar from "../pages/Calendar";
-import Statistics from "../pages/Statistics";
+import Statistics from "../pages/Statistics/[...params]";
 
 interface props {
   isLoggedIn: boolean;
