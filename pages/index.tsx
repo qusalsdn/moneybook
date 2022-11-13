@@ -27,7 +27,7 @@ const Home: NextPage<props> = ({ userObj }) => {
   const [details, setDetails] = useState<any[]>([]); // 로그인한 id의 가계부 내역
   const [classification, setClassification] = useState(""); // 카테고리 선택에 따른 값
   // 초기화 및 가계부 내역을 추가할 때 라디오 버튼의 체크가 해제 되어야 하는데 그것을 확인하는 유무
-  const [checkedType, setCheckedType] = useState("");
+  const [checkedType, setCheckedType] = useState("spending");
   const [year, setYear] = useState(0); // input 값의 '년도'
   const [month, setMonth] = useState(0); // input 값의 '월'
   const [day, setDay] = useState(0); // input 값의 '일'
@@ -76,7 +76,9 @@ const Home: NextPage<props> = ({ userObj }) => {
       days.push(detail.day);
     });
     const newDays = Array.from(new Set(days));
-    newDays.sort();
+    newDays.sort((a: any, b: any) => {
+      return a - b;
+    });
 
     // 해당 정렬된 '일(day)' 별로 가계부 내역을 출력해준다.
     newDays.forEach((day) => {
@@ -103,6 +105,7 @@ const Home: NextPage<props> = ({ userObj }) => {
                           ["category"]: detail.category,
                           ["memo"]: detail.memo,
                         });
+                        setClassification(detail.classification);
                         setCheckedType(detail.classification);
                         setYear(detail.year);
                         setMonth(detail.month);
@@ -456,33 +459,51 @@ const Home: NextPage<props> = ({ userObj }) => {
             </div>
             <div>
               <span>카테고리</span>
-              <select
-                name="category"
-                id="category-select"
-                onChange={onChange}
-                value={category}
-                required
-                style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
-              >
-                <option value="">선택하세요</option>
-                <option value="food">식비</option>
-                <option value="cafe">카페/간식</option>
-                <option value="alcohol">술/유흥</option>
-                <option value="life">생활</option>
-                <option value="shopping">쇼핑</option>
-                <option value="beauty">뷰티/미용</option>
-                <option value="traffic">교통</option>
-                <option value="car">자동차</option>
-                <option value="residence">주거/통신</option>
-                <option value="medical">의료/건상</option>
-                <option value="banking">금융</option>
-                <option value="leisure">문화/여가</option>
-                <option value="travel">여행/숙바</option>
-                <option value="education">교육/학습</option>
-                <option value="parenting">자녀/육아</option>
-                <option value="pets">반려동물</option>
-                <option value="gift">경조/선물</option>
-              </select>
+              {classification === "income" ? (
+                <select
+                  name="category"
+                  id="category-select"
+                  onChange={onChange}
+                  value={category}
+                  required
+                  style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                >
+                  <option value="">선택하세요</option>
+                  <option value="급여">급여</option>
+                  <option value="용돈">용돈</option>
+                  <option value="금융수입">금융수입</option>
+                  <option value="사업수입">사업수입</option>
+                  <option value="기타수입">기타수입</option>
+                </select>
+              ) : (
+                <select
+                  name="category"
+                  id="category-select"
+                  onChange={onChange}
+                  value={category}
+                  required
+                  style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                >
+                  <option value="">선택하세요</option>
+                  <option value="식비">식비</option>
+                  <option value="카페">카페/간식</option>
+                  <option value="술">술/유흥</option>
+                  <option value="생활">생활</option>
+                  <option value="쇼핑">쇼핑</option>
+                  <option value="뷰티">뷰티/미용</option>
+                  <option value="교통">교통</option>
+                  <option value="자동차">자동차</option>
+                  <option value="주거">주거/통신</option>
+                  <option value="의료">의료/건상</option>
+                  <option value="금융">금융</option>
+                  <option value="문화">문화/여가</option>
+                  <option value="여행">여행/숙바</option>
+                  <option value="교육">교육/학습</option>
+                  <option value="자녀">자녀/육아</option>
+                  <option value="반려동물">반려동물</option>
+                  <option value="선물">경조/선물</option>
+                </select>
+              )}
             </div>
           </div>
           <div style={{ display: "flex" }}>
@@ -577,26 +598,51 @@ const Home: NextPage<props> = ({ userObj }) => {
               </div>
               <div>
                 <span>카테고리</span>
-                <select name="category" id="category-select" onChange={onChange} value={category} required>
-                  <option value="">선택하세요</option>
-                  <option value="food">식비</option>
-                  <option value="cafe">카페/간식</option>
-                  <option value="alcohol">술/유흥</option>
-                  <option value="life">생활</option>
-                  <option value="shopping">쇼핑</option>
-                  <option value="beauty">뷰티/미용</option>
-                  <option value="traffic">교통</option>
-                  <option value="car">자동차</option>
-                  <option value="residence">주거/통신</option>
-                  <option value="medical">의료/건상</option>
-                  <option value="banking">금융</option>
-                  <option value="leisure">문화/여가</option>
-                  <option value="travel">여행/숙바</option>
-                  <option value="education">교육/학습</option>
-                  <option value="parenting">자녀/육아</option>
-                  <option value="pets">반려동물</option>
-                  <option value="gift">경조/선물</option>
-                </select>
+                {classification === "income" ? (
+                  <select
+                    name="category"
+                    id="category-select"
+                    onChange={onChange}
+                    value={category}
+                    required
+                    style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                  >
+                    <option value="">선택하세요</option>
+                    <option value="급여">급여</option>
+                    <option value="용돈">용돈</option>
+                    <option value="금융수입">금융수입</option>
+                    <option value="사업수입">사업수입</option>
+                    <option value="기타수입">기타수입</option>
+                  </select>
+                ) : (
+                  <select
+                    name="category"
+                    id="category-select"
+                    onChange={onChange}
+                    value={category}
+                    required
+                    style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                  >
+                    <option value="">선택하세요</option>
+                    <option value="식비">식비</option>
+                    <option value="카페">카페/간식</option>
+                    <option value="술">술/유흥</option>
+                    <option value="생활">생활</option>
+                    <option value="쇼핑">쇼핑</option>
+                    <option value="뷰티">뷰티/미용</option>
+                    <option value="교통">교통</option>
+                    <option value="차동차">자동차</option>
+                    <option value="주거">주거/통신</option>
+                    <option value="의료">의료/건상</option>
+                    <option value="금융">금융</option>
+                    <option value="문화">문화/여가</option>
+                    <option value="여행">여행/숙바</option>
+                    <option value="교육">교육/학습</option>
+                    <option value="자녀">자녀/육아</option>
+                    <option value="반려동물">반려동물</option>
+                    <option value="선물">경조/선물</option>
+                  </select>
+                )}
               </div>
               <div>
                 <span>메모</span>
