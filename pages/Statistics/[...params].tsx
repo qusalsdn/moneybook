@@ -65,54 +65,68 @@ const Statistics = () => {
   }, [details]);
 
   useEffect(() => {
-    if (Object.keys(spendingData).length > 5) {
-      const data = createDoughnut();
-      setCategory(data[0]);
-      setMoney(data[1]);
+    if (classification === "income") {
+      if (Object.keys(incomeData).length > 5) {
+        const data = createDoughnut(incomeData);
+        setCategory(data[0]);
+        setMoney(data[1]);
+      } else {
+        const data = createDoughnut(incomeData);
+        setCategory(data[0]);
+        setMoney(data[1]);
+      }
     } else {
-      const data = createDoughnut();
-      setCategory(data[0]);
-      setMoney(data[1]);
+      if (Object.keys(spendingData).length > 5) {
+        const data = createDoughnut(spendingData);
+        setCategory(data[0]);
+        setMoney(data[1]);
+      } else {
+        const data = createDoughnut(spendingData);
+        setCategory(data[0]);
+        setMoney(data[1]);
+      }
     }
-  }, [incomeData, spendingData]);
+  }, [classification, incomeData, spendingData]);
 
   useEffect(() => {
-    setData({
-      labels: category,
-      datasets: [
-        {
-          label: "Statistics",
-          data: money,
-          backgroundColor: [
-            "rgba(255, 0, 0, 0.3)",
-            "rgba(54, 162, 235, 0.3)",
-            "rgba(255, 206, 86, 0.3)",
-            "rgba(75, 192, 192, 0.3)",
-            "rgba(153, 102, 255, 0.3)",
-            "rgba(128, 128, 128, 0.3)",
-          ],
-          borderColor: [
-            "rgba(255, 99, 132, 0.5)",
-            "rgba(54, 162, 235, 0.5)",
-            "rgba(255, 206, 86, 0.5)",
-            "rgba(75, 192, 192, 0.5)",
-            "rgba(153, 102, 255, 0.5)",
-            "rgba(128, 128, 128, 0.5)",
-          ],
-          borderWidth: 1,
-        },
-      ],
-    });
+    if (category.length != 0) {
+      setData({
+        labels: category,
+        datasets: [
+          {
+            label: "Statistics",
+            data: money,
+            backgroundColor: [
+              "rgba(255, 0, 0, 0.3)",
+              "rgba(54, 162, 235, 0.3)",
+              "rgba(255, 206, 86, 0.3)",
+              "rgba(75, 192, 192, 0.3)",
+              "rgba(153, 102, 255, 0.3)",
+              "rgba(128, 128, 128, 0.3)",
+            ],
+            borderColor: [
+              "rgba(255, 99, 132, 0.5)",
+              "rgba(54, 162, 235, 0.5)",
+              "rgba(255, 206, 86, 0.5)",
+              "rgba(75, 192, 192, 0.5)",
+              "rgba(153, 102, 255, 0.5)",
+              "rgba(128, 128, 128, 0.5)",
+            ],
+            borderWidth: 1,
+          },
+        ],
+      });
+    }
   }, [category, money]);
 
   // 차트를 그리기 위해 데이터를 생성하는 함수
-  const createDoughnut = () => {
+  const createDoughnut = (incomeOrSpending: any) => {
     const result = [];
     const category: any = [];
     const money: any = [];
-    spendingData.forEach((spending: any) => {
-      category.push(spending.category);
-      money.push(spending.money);
+    incomeOrSpending.forEach((data: any) => {
+      category.push(data.category);
+      money.push(data.money);
     });
     result[0] = category;
     result[1] = money;
@@ -172,8 +186,19 @@ const Statistics = () => {
     const {
       target: { value },
     } = e;
+    setData([]);
     setClassification(value);
     setCheckedType(value);
+  };
+
+  const draw = () => {
+    const render = [];
+    if (Object.keys(data).length != 0) {
+      render.push(<Doughnut data={data} />);
+    } else {
+      render.push(<h1 style={{ fontSize: "30px" }}>내역이 존재하지 않습니다...😢</h1>);
+    }
+    return render;
   };
 
   return (
@@ -210,8 +235,7 @@ const Statistics = () => {
         <label>지출</label>
       </div>
 
-      {Object.keys(data).length != 0 && <Doughnut data={data} />}
-      {/* <Doughnut data={data} /> */}
+      {classification === "income" ? draw() : draw()}
     </div>
   );
 };
