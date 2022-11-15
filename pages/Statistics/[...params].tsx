@@ -14,6 +14,8 @@ const Statistics = () => {
   const [classification, setClassification] = useState("");
   const [checkedType, setCheckedType] = useState("spending");
   const [data, setData] = useState<any>({});
+  const [category, setCategory] = useState([]);
+  const [money, setMoney] = useState([]);
 
   const beforeincome: any = [];
   let afterincome: any = [];
@@ -63,49 +65,59 @@ const Statistics = () => {
   }, [details]);
 
   useEffect(() => {
-    if (Object.keys(spendingData).length != 0) {
-      setData({
-        labels: [
-          spendingData[0].category,
-          spendingData[1].category,
-          spendingData[2].category,
-          spendingData[3].category,
-          spendingData[4].category,
-          spendingData[5].category,
-        ],
-        datasets: [
-          {
-            label: "Statistics",
-            data: [
-              spendingData[0].money,
-              spendingData[1].money,
-              spendingData[2].money,
-              spendingData[3].money,
-              spendingData[4].money,
-              spendingData[5].money,
-            ],
-            backgroundColor: [
-              "rgba(255, 0, 0, 0.3)",
-              "rgba(54, 162, 235, 0.3)",
-              "rgba(255, 206, 86, 0.3)",
-              "rgba(75, 192, 192, 0.3)",
-              "rgba(153, 102, 255, 0.3)",
-              "rgba(128, 128, 128, 0.3)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(54, 162, 235, 0.5)",
-              "rgba(255, 206, 86, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-              "rgba(153, 102, 255, 0.5)",
-              "rgba(128, 128, 128, 0.5)",
-            ],
-            borderWidth: 1,
-          },
-        ],
-      });
+    if (Object.keys(spendingData).length > 5) {
+      const data = createDoughnut();
+      setCategory(data[0]);
+      setMoney(data[1]);
+    } else {
+      const data = createDoughnut();
+      setCategory(data[0]);
+      setMoney(data[1]);
     }
   }, [incomeData, spendingData]);
+
+  useEffect(() => {
+    setData({
+      labels: category,
+      datasets: [
+        {
+          label: "Statistics",
+          data: money,
+          backgroundColor: [
+            "rgba(255, 0, 0, 0.3)",
+            "rgba(54, 162, 235, 0.3)",
+            "rgba(255, 206, 86, 0.3)",
+            "rgba(75, 192, 192, 0.3)",
+            "rgba(153, 102, 255, 0.3)",
+            "rgba(128, 128, 128, 0.3)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 0.5)",
+            "rgba(54, 162, 235, 0.5)",
+            "rgba(255, 206, 86, 0.5)",
+            "rgba(75, 192, 192, 0.5)",
+            "rgba(153, 102, 255, 0.5)",
+            "rgba(128, 128, 128, 0.5)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    });
+  }, [category, money]);
+
+  // 차트를 그리기 위해 데이터를 생성하는 함수
+  const createDoughnut = () => {
+    const result = [];
+    const category: any = [];
+    const money: any = [];
+    spendingData.forEach((spending: any) => {
+      category.push(spending.category);
+      money.push(spending.money);
+    });
+    result[0] = category;
+    result[1] = money;
+    return result;
+  };
 
   const createData = (before: any, after: any, category: any) => {
     // 빈 객체 배열 생성
@@ -133,22 +145,27 @@ const Statistics = () => {
     });
 
     // money가 가장 높은 카테고리 5개를 먼저 선정하고 나머지 카테고리는 기타로 분류 후 남은 money 값은 더한다.
-    const major = after.slice(0, 5);
-    const minor = after.slice(5);
-    const newMinor = [
-      {
-        category: "",
-        money: 0,
-      },
-    ];
-    for (let i = 0; i < minor.length; i++) {
-      newMinor[0] = {
-        category: "기타",
-        money: newMinor[0].money + minor[i].money,
-      };
+    // 단, 카테고리가 5개가 넘지 않을 경우 기타 카테고리를 구성하지 않고 5개까지 다 보여준다.
+    if (after.length > 5) {
+      const major = after.slice(0, 5);
+      const minor = after.slice(5);
+      const newMinor = [
+        {
+          category: "",
+          money: 0,
+        },
+      ];
+      for (let i = 0; i < minor.length; i++) {
+        newMinor[0] = {
+          category: "기타",
+          money: newMinor[0].money + minor[i].money,
+        };
+      }
+      const result = major.concat(newMinor);
+      return result;
+    } else {
+      return after;
     }
-    const result = major.concat(newMinor);
-    return result;
   };
 
   const onChangeClassification = (e: any) => {
