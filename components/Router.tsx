@@ -5,6 +5,7 @@ import NavBar from "./NavBar";
 import { useRouter } from "next/router";
 import Calendar from "../pages/Calendar";
 import Statistics from "../pages/Statistics/[...params]";
+import Detail from "../pages/Home/[...params]";
 
 interface props {
   isLoggedIn: boolean;
@@ -21,8 +22,10 @@ const Router: NextPage<props> = ({ isLoggedIn, userObj }) => {
       return <Home userObj={userObj} />;
     } else if (pathName === "/Calendar") {
       return <Calendar />;
-    } else {
+    } else if (pathName === "/Statistics/[...params]") {
       return <Statistics />;
+    } else {
+      return <Detail />;
     }
   };
   return (

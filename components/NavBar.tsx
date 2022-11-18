@@ -15,9 +15,6 @@ const NavBar = () => {
       <Link href={"/Calendar"}>
         <button>달력</button>
       </Link>
-      <Link href={"/Statistics"}>
-        <button>분석</button>
-      </Link>
       <button onClick={onSocialLogout}>LogOut</button>
     </nav>
   );

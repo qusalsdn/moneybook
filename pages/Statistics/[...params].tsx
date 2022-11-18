@@ -1,5 +1,8 @@
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
@@ -27,9 +30,14 @@ const Statistics = () => {
 
   const router = useRouter();
   const { params }: any = router.query;
-  const userObj = params[0];
-  const year = Number(params[1]);
-  const month = Number(params[2]);
+  let userObj: any;
+  let year: any;
+  let month: any;
+  if (params) {
+    userObj = params[0];
+    year = Number(params[1]);
+    month = Number(params[2]);
+  }
 
   useEffect(() => {
     const q = query(collection(dbService, userObj), where("year", "==", year), where("month", "==", month));
@@ -213,26 +221,33 @@ const Statistics = () => {
         margin: "80px auto 0px",
       }}
     >
-      <div>
-        <span>분류</span>
-        <input
-          type="radio"
-          value="income"
-          name="classification"
-          onChange={onChangeClassification}
-          checked={checkedType === "income" ? true : false}
-          required
-        />
-        <label>수입</label>
-        <input
-          type="radio"
-          value="spending"
-          name="classification"
-          onChange={onChangeClassification}
-          checked={checkedType === "spending" ? true : false}
-          required
-        />
-        <label>지출</label>
+      <div style={{ width: "750px" }}>
+        <div style={{ display: "flex", justifyContent: "flex-start", fontSize: "30px" }}>
+          <Link href={`/Home/${userObj}/${year}/${month}`}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </Link>
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <span>분류</span>
+          <input
+            type="radio"
+            value="income"
+            name="classification"
+            onChange={onChangeClassification}
+            checked={checkedType === "income" ? true : false}
+            required
+          />
+          <label>수입</label>
+          <input
+            type="radio"
+            value="spending"
+            name="classification"
+            onChange={onChangeClassification}
+            checked={checkedType === "spending" ? true : false}
+            required
+          />
+          <label>지출</label>
+        </div>
       </div>
 
       {classification === "income" ? draw() : draw()}
