@@ -14,7 +14,6 @@ const OAuth = () => {
       provider = new GithubAuthProvider();
     }
     const data = await signInWithPopup(authService, provider);
-    console.log(data.user);
   };
 
   return (

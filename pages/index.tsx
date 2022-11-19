@@ -54,6 +54,8 @@ const Home: NextPage<props> = ({ userObj }) => {
     setNewYear(firstYear);
     setNewMonth(firstMonth);
     setLoading(false);
+    countYear = nowDate.getFullYear();
+    countMonth = nowDate.getMonth() + 1;
   }, []);
 
   // 페이지에서 동적으로 '월'를 변경할 때 해당 '월'에 대한 가계부 내역을 가져온다.

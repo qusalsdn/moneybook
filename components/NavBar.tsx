@@ -1,10 +1,13 @@
 import { authService } from "../src/fBase";
 import { signOut } from "firebase/auth";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const NavBar = () => {
+  const router = useRouter();
   const onSocialLogout = () => {
     signOut(authService);
+    router.push("/OAuth", "/");
   };
 
   return (

@@ -1,5 +1,5 @@
 import Home from "../pages";
-import OAuth from "./OAuth";
+import OAuth from "../pages/OAuth";
 import { NextPage } from "next";
 import NavBar from "./NavBar";
 import { useRouter } from "next/router";
@@ -14,7 +14,10 @@ interface props {
 
 const Router: NextPage<props> = ({ isLoggedIn, userObj }) => {
   const router = useRouter();
-  const pathName = router.pathname;
+  let pathName = router.pathname;
+  if (pathName === "/OAuth") {
+    pathName = "/";
+  }
 
   // 네이게이션에서 선택한 메뉴에 따라 해당 페이지로 이동하는 함수
   const navBarSelection = () => {
@@ -24,7 +27,7 @@ const Router: NextPage<props> = ({ isLoggedIn, userObj }) => {
       return <Calendar />;
     } else if (pathName === "/Statistics/[...params]") {
       return <Statistics />;
-    } else {
+    } else if (pathName === "/Home/[...params]") {
       return <Detail />;
     }
   };
