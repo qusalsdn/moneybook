@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faSpinner, faXmark, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faXmark, faTrashCan, faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { collection, addDoc, query, where, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { dbService } from "../src/fBase";
@@ -113,21 +113,55 @@ const Home: NextPage<props> = ({ userObj }) => {
       return a - b;
     });
 
+    const dayMoney = (day: any, classification: any) => {
+      let incomeResult = 0;
+      let spendingResult = 0;
+      details.forEach((detail) => {
+        if (day === detail.day) {
+          if (detail.classification === "income") {
+            incomeResult += Number(detail.money);
+          } else {
+            spendingResult += Number(detail.money);
+          }
+        }
+      });
+      if (classification === "income") {
+        return incomeResult.toLocaleString();
+      } else {
+        return spendingResult.toLocaleString();
+      }
+    };
+
     // 해당 정렬된 '일(day)' 별로 가계부 내역을 출력해준다.
     newDays.forEach((day) => {
       const dayOfWeek = week[new Date(`${newYear}-${newMonth}-${day}`).getDay()];
       render.push(
         <>
-          <div>
-            <h1 style={{ fontSize: "20px", fontWeight: "bold", marginTop: "20px" }}>
-              {`${newYear}-${newMonth}-${day}`} {dayOfWeek}
-            </h1>
+          <div style={{ marginTop: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <h1 style={{ fontSize: "20px", fontWeight: "bold" }}>
+                {`${newYear}-${newMonth}-${day}`} {dayOfWeek}
+              </h1>
+              <div>
+                {dayMoney(day, "income") === "0" ? (
+                  ""
+                ) : (
+                  <span style={{ color: "#00C68E" }}>+{`${dayMoney(day, "income")}`}</span>
+                )}
+                {dayMoney(day, "spending") === "0" ? (
+                  ""
+                ) : (
+                  <span style={{ marginLeft: "10px" }}>-{`${dayMoney(day, "spending")}`}</span>
+                )}
+              </div>
+            </div>
             <hr />
             {details.map((detail) => {
               if (day === detail.day) {
                 return (
                   <>
                     <div
+                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
                       onClick={() => {
                         setFieldId(detail.fieldId);
                         setVisibility(true);
@@ -146,9 +180,25 @@ const Home: NextPage<props> = ({ userObj }) => {
                       }}
                       className="test"
                     >
-                      <span>{detail.category} </span>
-                      <span>{detail.memo} </span>
-                      <span>{detail.classification === "income" ? `+${detail.money}` : `-${detail.money}`} </span>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <span
+                          style={{
+                            marginRight: "20px",
+                            padding: "10px 15px",
+                            backgroundColor: "#00C68E",
+                            color: "white",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {detail.category}
+                        </span>
+                        <span>{detail.memo} </span>
+                      </div>
+                      <span>
+                        {detail.classification === "income"
+                          ? `+${Number(detail.money).toLocaleString()}원`
+                          : `-${Number(detail.money).toLocaleString()}원`}
+                      </span>
                     </div>
                     <hr />
                   </>
@@ -312,7 +362,8 @@ const Home: NextPage<props> = ({ userObj }) => {
           <div>
             <h1>{newYear}</h1>
             <FontAwesomeIcon
-              icon={faArrowLeft}
+              icon={faCaretLeft}
+              style={{ cursor: "pointer" }}
               onClick={() => {
                 let nextCheck = true;
                 --countMonth;
@@ -346,7 +397,8 @@ const Home: NextPage<props> = ({ userObj }) => {
             />
             <span>{newMonth}</span>
             <FontAwesomeIcon
-              icon={faArrowRight}
+              icon={faCaretRight}
+              style={{ cursor: "pointer" }}
               onClick={() => {
                 let nextCheck = true;
                 ++countMonth;
@@ -439,8 +491,8 @@ const Home: NextPage<props> = ({ userObj }) => {
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", width: "700px" }}>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <span>지출 {income}</span>
-          <span>수입 {spending}</span>
+          <span>지출 {income}원</span>
+          <span>수입 {spending}원</span>
         </div>
         <div style={{ display: "flex" }}>
           <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>
@@ -681,7 +733,9 @@ const Home: NextPage<props> = ({ userObj }) => {
                 <span>메모</span>
                 <input type="text" name="memo" onChange={onChange} value={memo} required />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "150px" }}>
+              <div
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "150px" }}
+              >
                 <button type="button" onClick={onClickDelete}>
                   <FontAwesomeIcon icon={faTrashCan} />
                 </button>
