@@ -34,6 +34,8 @@ const Detail = () => {
     money: "",
     memo: "",
   }); // input 값의 '카테고리', '금액', '메모'
+  const [income, setIncome] = useState<any>(0); // 수입 총액
+  const [spending, setSpending] = useState<any>(0); // 지출 총액
   const [newYear, setNewYear] = useState(0); // 페이지에 보여지는 동적인 '년도'
   const [newMonth, setNewMonth] = useState(0); // 페이지에 보여지는 동적인 '월'
   const [loading, setLoading] = useState(true);
@@ -61,6 +63,36 @@ const Detail = () => {
     countYear = paramsYear;
     countMonth = paramsMonth;
   }, []);
+
+  useEffect(() => {
+    console.log(details);
+    const incomeList: any = [];
+    const spendingList: any = [];
+    details.forEach((detail) => {
+      if (detail.classification === "income") {
+        incomeList.push(Number(detail.money));
+        // setIncome((income: any) => [...income, Number(detail.money)]);
+      } else {
+        spendingList.push(Number(detail.money));
+        // setSpending((spending: any) => [...spending, Number(detail.money)]);
+      }
+    });
+    let incomeSum = 0;
+    let spendingSum = 0;
+
+    incomeList.forEach((income: any) => {
+      incomeSum += income;
+    });
+    const incomeResult = incomeSum.toLocaleString();
+
+    spendingList.forEach((spending: any) => {
+      spendingSum += spending;
+    });
+    const spendingResult = spendingSum.toLocaleString();
+
+    setIncome(incomeResult);
+    setSpending(spendingResult);
+  }, [details]);
 
   // 페이지에서 동적으로 '월'를 변경할 때 해당 '월'에 대한 가계부 내역을 가져온다.
   useEffect(() => {
@@ -276,7 +308,7 @@ const Detail = () => {
         justifyContent: "center",
         flexDirection: "column",
         width: "100vw",
-        maxWidth: "890px",
+        maxWidth: "700px",
         margin: "80px auto 0px",
       }}
     >
@@ -410,10 +442,10 @@ const Detail = () => {
         </div>
       </div>
 
-      <div style={{ display: "flex" }}>
-        <div>
-          <span>지출 </span>
-          <span>수입 </span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", width: "700px" }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <span>지출 {income}</span>
+          <span>수입 {spending}</span>
         </div>
         <div>
           <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>
