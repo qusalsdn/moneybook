@@ -66,10 +66,8 @@ const Home: NextPage<props> = ({ userObj }) => {
     details.forEach((detail) => {
       if (detail.classification === "income") {
         incomeList.push(Number(detail.money));
-        // setIncome((income: any) => [...income, Number(detail.money)]);
       } else {
         spendingList.push(Number(detail.money));
-        // setSpending((spending: any) => [...spending, Number(detail.money)]);
       }
     });
     let incomeSum = 0;
@@ -491,8 +489,8 @@ const Home: NextPage<props> = ({ userObj }) => {
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", width: "700px" }}>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <span>지출 {income}원</span>
-          <span>수입 {spending}원</span>
+          <span>지출 {spending}원</span>
+          <span>수입 {income}원</span>
         </div>
         <div style={{ display: "flex" }}>
           <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>
