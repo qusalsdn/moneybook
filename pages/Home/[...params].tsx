@@ -180,7 +180,7 @@ const Detail = () => {
                         setMonth(detail.month);
                         setDay(detail.day);
                       }}
-                      className="test"
+                      className="hover"
                     >
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <span

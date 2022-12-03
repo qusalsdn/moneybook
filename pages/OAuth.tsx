@@ -3,7 +3,10 @@ import { GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from "firebas
 import { authService } from "../src/fBase";
 import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+
+const gitHub = faGithub as IconProp;
+const google = faGoogle as IconProp;
 
 const OAuth = () => {
   const onSocialLogin = async (event: any) => {
@@ -57,7 +60,7 @@ const OAuth = () => {
           backgroundColor: "white",
         }}
       >
-        <FontAwesomeIcon icon={faGoogle} style={{ color: "black", fontSize: "30px", marginRight: "10px" }} />
+        <FontAwesomeIcon icon={google} style={{ color: "black", fontSize: "30px", marginRight: "10px" }} />
         <span style={{ fontSize: "25px", marginRight: "10px" }}>구글 로그인</span>
         <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: "20px" }} />
       </button>
@@ -70,7 +73,7 @@ const OAuth = () => {
           backgroundColor: "#374151",
         }}
       >
-        <FontAwesomeIcon icon={faGithub} style={{ color: "white", fontSize: "30px", marginRight: "10px" }} />
+        <FontAwesomeIcon icon={gitHub} style={{ color: "white", fontSize: "30px", marginRight: "10px" }} />
         <span style={{ fontSize: "25px", marginRight: "10px", color: "white" }}>깃헙 로그인</span>
         <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: "20px", color: "white" }} />
       </button>

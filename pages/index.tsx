@@ -135,7 +135,7 @@ const Home: NextPage<props> = ({ userObj }) => {
       const dayOfWeek = week[new Date(`${newYear}-${newMonth}-${day}`).getDay()];
       render.push(
         <>
-          <div style={{ marginTop: "20px" }}>
+          <div style={{ marginTop: "40px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <h1 style={{ fontSize: "20px", fontWeight: "bold" }}>
                 {`${newYear}-${newMonth}-${day}`} {dayOfWeek}
@@ -176,7 +176,7 @@ const Home: NextPage<props> = ({ userObj }) => {
                         setMonth(detail.month);
                         setDay(detail.day);
                       }}
-                      className="test"
+                      className="hover"
                     >
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <span

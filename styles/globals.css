@@ -181,6 +181,6 @@ hr {
   cursor: pointer;
 }
 
-.test:hover {
-  font-size: 18px;
+.hover:hover {
+  font-size: 17px;
 }
