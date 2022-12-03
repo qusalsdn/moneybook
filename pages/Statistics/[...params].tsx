@@ -218,17 +218,23 @@ const Statistics = () => {
         flexDirection: "column",
         width: "100vw",
         maxWidth: "750px",
-        margin: "80px auto 0px",
+        margin: "50px auto 0px",
       }}
     >
-      <div style={{ width: "750px" }}>
-        <div style={{ display: "flex", justifyContent: "flex-start", fontSize: "30px" }}>
-          <Link href={`/Home/${userObj}/${year}/${month}`}>
-            <FontAwesomeIcon icon={faArrowLeft} />
-          </Link>
-        </div>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <span>분류</span>
+      <div style={{ width: "750px", marginBottom: "30px" }}>
+        <Link href={`/Home/${userObj}/${year}/${month}`}>
+          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: "30px", marginLeft: "150px" }} />
+        </Link>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: "20px",
+            fontWeight: "bold",
+          }}
+        >
+          <span style={{ marginRight: "10px" }}>분류</span>
           <input
             type="radio"
             value="income"
@@ -237,7 +243,7 @@ const Statistics = () => {
             checked={checkedType === "income" ? true : false}
             required
           />
-          <label>수입</label>
+          <label style={{ marginRight: "5px" }}>수입</label>
           <input
             type="radio"
             value="spending"

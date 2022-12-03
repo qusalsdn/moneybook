@@ -3,7 +3,6 @@ import OAuth from "../pages/OAuth";
 import { NextPage } from "next";
 import NavBar from "./NavBar";
 import { useRouter } from "next/router";
-import Calendar from "../pages/Calendar";
 import Statistics from "../pages/Statistics/[...params]";
 import Detail from "../pages/Home/[...params]";
 
@@ -23,17 +22,21 @@ const Router: NextPage<props> = ({ isLoggedIn, userObj }) => {
   const navBarSelection = () => {
     if (pathName === "/") {
       return <Home userObj={userObj} />;
-    } else if (pathName === "/Calendar") {
-      return <Calendar />;
     } else if (pathName === "/Statistics/[...params]") {
       return <Statistics />;
     } else if (pathName === "/Home/[...params]") {
       return <Detail />;
     }
   };
+
+  const navBarHide = () => {
+    if (pathName != "/Statistics/[...params]") {
+      return <NavBar />;
+    }
+  };
   return (
     <>
-      {isLoggedIn && <NavBar />}
+      {isLoggedIn && navBarHide()}
       {isLoggedIn ? navBarSelection() : <OAuth />}
     </>
   );

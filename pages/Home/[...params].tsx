@@ -194,7 +194,11 @@ const Detail = () => {
                         >
                           {detail.category}
                         </span>
-                        <span>{detail.memo} </span>
+                        <span
+                          style={{ width: "480px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                        >
+                          {detail.memo}{" "}
+                        </span>
                       </div>
                       <span>
                         {detail.classification === "income"
@@ -356,16 +360,25 @@ const Detail = () => {
         flexDirection: "column",
         width: "100vw",
         maxWidth: "700px",
-        margin: "80px auto 0px",
+        margin: "50px auto 0px",
+        fontWeight: "bold",
       }}
     >
-      <div style={{ display: "flex" }}>
-        <div>
-          <div>
-            <h1>{newYear}</h1>
+      <div style={{ display: "flex", width: "700px", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ marginLeft: "150px" }}>
+          <h1 style={{ fontSize: "30px" }}>{newYear}</h1>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: "25px",
+              marginTop: "10px",
+            }}
+          >
             <FontAwesomeIcon
               icon={faCaretLeft}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", marginTop: "5px", marginRight: "1px" }}
               onClick={() => {
                 let nextCheck = true;
                 --countMonth;
@@ -400,7 +413,7 @@ const Detail = () => {
             <span>{newMonth}</span>
             <FontAwesomeIcon
               icon={faCaretRight}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", marginTop: "5px", marginLeft: "2px" }}
               onClick={() => {
                 let nextCheck = true;
                 ++countMonth;
@@ -434,8 +447,13 @@ const Detail = () => {
             />
           </div>
         </div>
-        <div>
-          <select name="month" onChange={onChangeMonth} value={`${newYear}-${newMonth}`}>
+        <div style={{ display: "flex", alignItems: "center", marginRight: "150px" }}>
+          <select
+            name="month"
+            onChange={onChangeMonth}
+            value={`${newYear}-${newMonth}`}
+            style={{ border: "none", outline: "0", fontSize: "17px", fontWeight: "bold" }}
+          >
             <option value="2020-1">2020년 1월</option>
             <option value="2020-2">2020년 2월</option>
             <option value="2020-3">2020년 3월</option>
@@ -485,29 +503,71 @@ const Detail = () => {
             <option value="2023-11">2023년 11월</option>
             <option value="2023-12">2023년 12월</option>
           </select>
-          <button type="button" onClick={onClickNowDate}>
+          <button
+            type="button"
+            onClick={onClickNowDate}
+            style={{
+              fontSize: "15px",
+              backgroundColor: "#00C68E",
+              color: "white",
+              border: "none",
+              padding: "5px 15px",
+              borderRadius: "5px",
+              marginLeft: "10px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
             현재 달로 이동
           </button>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", width: "700px" }}>
-        <div style={{ display: "flex", flexDirection: "column" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "700px",
+          marginTop: "30px",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", fontSize: "19px", marginLeft: "150px" }}>
           <span>지출 {spending}원</span>
-          <span>수입 {income}원</span>
+          <span style={{ marginTop: "10px" }}>
+            수입 <span style={{ color: "#00C68E" }}>{income}원</span>
+          </span>
         </div>
-        <div>
-          <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>
-            <button>분석</button>
-          </Link>
-        </div>
+        <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>
+          <button
+            style={{
+              fontSize: "17px",
+              backgroundColor: "#00C68E",
+              border: "none",
+              color: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              marginRight: "150px",
+            }}
+          >
+            분석
+          </button>
+        </Link>
       </div>
 
-      <div>
+      <div
+        style={{
+          marginTop: "50px",
+          width: "700px",
+        }}
+      >
+        <h1 style={{ marginLeft: "150px", fontSize: "19px", marginBottom: "10px", color: "#00C68E" }}>가계부 추가</h1>
         <form onSubmit={onSubmit}>
-          <div style={{ display: "flex" }}>
-            <div>
-              <span>분류</span>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", marginLeft: "150px" }}>
+              <span style={{ fontSize: "19px", marginRight: "5px" }}>분류</span>
               <input
                 type="radio"
                 value="income"
@@ -527,13 +587,27 @@ const Detail = () => {
               />
               <label>지출</label>
             </div>
-            <button type="button" style={{ justifyContent: "end" }} onClick={onClickReset}>
+            <button
+              type="button"
+              style={{
+                fontSize: "17px",
+                backgroundColor: "#00C68E",
+                border: "none",
+                color: "white",
+                padding: "10px",
+                borderRadius: "5px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                marginRight: "150px",
+              }}
+              onClick={onClickReset}
+            >
               초기화
             </button>
           </div>
-          <div style={{ display: "flex" }}>
-            <div>
-              <span>날짜</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "10px" }}>
+            <div style={{ fontSize: "19px", display: "flex", alignItems: "center", marginLeft: "150px" }}>
+              <span style={{ marginRight: "5px" }}>날짜</span>
               <input
                 type="date"
                 min="2020-01-01"
@@ -542,10 +616,11 @@ const Detail = () => {
                 onChange={onChangeDate}
                 value={`${year}-${month < 10 ? `0${month}` : `${month}`}-${day < 10 ? `0${day}` : `${day}`}`}
                 required
+                style={{ border: "none", fontWeight: "bold" }}
               />
             </div>
-            <div>
-              <span>카테고리</span>
+            <div style={{ marginRight: "150px" }}>
+              <span style={{ marginRight: "5px" }}>카테고리</span>
               {classification === "income" ? (
                 <select
                   name="category"
@@ -553,7 +628,7 @@ const Detail = () => {
                   onChange={onChange}
                   value={category}
                   required
-                  style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                  style={{ border: "none", outline: "0", fontWeight: "bold" }}
                 >
                   <option value="">선택하세요</option>
                   <option value="급여">급여</option>
@@ -569,7 +644,7 @@ const Detail = () => {
                   onChange={onChange}
                   value={category}
                   required
-                  style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                  style={{ border: "none", outline: "0", fontWeight: "bold" }}
                 >
                   <option value="">선택하세요</option>
                   <option value="식비">식비</option>
@@ -593,17 +668,35 @@ const Detail = () => {
               )}
             </div>
           </div>
-          <div style={{ display: "flex" }}>
-            <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px" }}>
+            <div style={{ marginLeft: "150px", fontSize: "19px" }}>
               <span>금액</span>
-              <input type="text" name="money" onChange={onChange} value={money} required />
+              <input type="text" name="money" onChange={onChange} value={money} required style={{ fontSize: "15px" }} />
             </div>
-            <div>
+            <div style={{ marginRight: "140px", fontSize: "19px" }}>
               <span>메모</span>
-              <input type="text" name="memo" onChange={onChange} value={memo} required />
+              <input type="text" name="memo" onChange={onChange} value={memo} required style={{ fontSize: "15px" }} />
             </div>
           </div>
-          <button type="submit">저장</button>
+          <div style={{ width: "700px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <button
+              type="submit"
+              style={{
+                width: "700px",
+                margin: "10px 150px",
+                backgroundColor: "#00C68E",
+                border: "none",
+                color: "white",
+                fontSize: "19px",
+                fontWeight: "bold",
+                padding: "15px 0px",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              저장
+            </button>
+          </div>
         </form>
       </div>
       <hr style={{ height: "5px", backgroundColor: "gray", opacity: "0.5", border: "0px" }} />

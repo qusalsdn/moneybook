@@ -168,6 +168,19 @@ hr {
   }
 }
 
+.loginButton {
+  margin: 10px 50px;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 15px 0px;
+  border-radius: 5px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .test:hover {
   font-size: 18px;
 }
