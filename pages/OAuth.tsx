@@ -9,23 +9,6 @@ const gitHub = faGithub as IconProp;
 const google = faGoogle as IconProp;
 
 const OAuth = () => {
-  const onSocialLogin = async (event: any) => {
-    const {
-      target: { name },
-    } = event;
-
-    let provider: any;
-    if (name === "google") {
-      provider = new GoogleAuthProvider();
-    } else if (name === "github") {
-      provider = new GithubAuthProvider();
-    }
-    console.log(authService, provider);
-    if (provider) {
-      await signInWithPopup(authService, provider);
-    }
-  };
-
   return (
     <div
       style={{
@@ -52,7 +35,12 @@ const OAuth = () => {
         로그인
       </h1>
       <button
-        onClick={onSocialLogin}
+        onClick={() => {
+          const provider = new GoogleAuthProvider();
+          if (provider) {
+            signInWithPopup(authService, provider);
+          }
+        }}
         name="google"
         className="loginButton"
         style={{
@@ -65,7 +53,12 @@ const OAuth = () => {
         <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: "20px" }} />
       </button>
       <button
-        onClick={onSocialLogin}
+        onClick={() => {
+          const provider = new GithubAuthProvider();
+          if (provider) {
+            signInWithPopup(authService, provider);
+          }
+        }}
         name="github"
         className="loginButton"
         style={{
