@@ -152,7 +152,7 @@ hr {
 
 @keyframes fadeIn {
   from {
-    transform: translateY(110%);
+    transform: translateY(160%);
   }
   to {
     transform: none;
@@ -164,7 +164,7 @@ hr {
     transform: translateY(0%);
   }
   to {
-    transform: translateY(100%);
+    transform: translateY(140%);
   }
 }
 
@@ -179,8 +179,4 @@ hr {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-
-.hover:hover {
-  font-size: 17px;
 }

@@ -163,7 +163,12 @@ const Detail = () => {
                 return (
                   <>
                     <div
-                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        cursor: "pointer",
+                      }}
                       onClick={() => {
                         setFieldId(detail.fieldId);
                         setVisibility(true);
@@ -179,8 +184,8 @@ const Detail = () => {
                         setYear(detail.year);
                         setMonth(detail.month);
                         setDay(detail.day);
+                        window.scrollTo(0, 0);
                       }}
-                      className="hover"
                     >
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <span
@@ -538,23 +543,21 @@ const Detail = () => {
             수입 <span style={{ color: "#00C68E" }}>{income}원</span>
           </span>
         </div>
-        <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>
-          <button
-            style={{
-              fontSize: "17px",
-              backgroundColor: "#00C68E",
-              border: "none",
-              color: "white",
-              padding: "10px",
-              borderRadius: "5px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              marginRight: "150px",
-            }}
-          >
-            분석
-          </button>
-        </Link>
+        <button
+          style={{
+            fontSize: "17px",
+            backgroundColor: "#00C68E",
+            border: "none",
+            color: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            marginRight: "150px",
+          }}
+        >
+          <Link href={`/Statistics/${userObj}/${newYear}/${newMonth}`}>분석</Link>
+        </button>
       </div>
 
       <div
@@ -671,11 +674,25 @@ const Detail = () => {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px" }}>
             <div style={{ marginLeft: "150px", fontSize: "19px" }}>
               <span>금액</span>
-              <input type="text" name="money" onChange={onChange} value={money} required style={{ fontSize: "15px" }} />
+              <input
+                type="number"
+                name="money"
+                onChange={onChange}
+                value={money}
+                required
+                style={{ fontSize: "15px", marginTop: "20px" }}
+              />
             </div>
             <div style={{ marginRight: "140px", fontSize: "19px" }}>
               <span>메모</span>
-              <input type="text" name="memo" onChange={onChange} value={memo} required style={{ fontSize: "15px" }} />
+              <input
+                type="text"
+                name="memo"
+                onChange={onChange}
+                value={memo}
+                required
+                style={{ fontSize: "15px", marginTop: "20px" }}
+              />
             </div>
           </div>
           <div style={{ width: "700px", display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -705,7 +722,13 @@ const Detail = () => {
         {loading ? (
           <FontAwesomeIcon
             icon={faSpinner}
-            style={{ width: "100%", justifyContent: "center", fontSize: "50px", fontWeight: "bold", marginTop: "50px" }}
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              fontSize: "50px",
+              fontWeight: "bold",
+              marginTop: "50px",
+            }}
           />
         ) : (
           createDetail()
@@ -719,17 +742,22 @@ const Detail = () => {
             display: "flex",
             flexDirection: "column",
             position: "fixed",
-            bottom: "50px",
+            bottom: "210px",
             width: "400px",
             height: "400px",
-            backgroundColor: "gray",
-            borderRadius: "20px",
+            backgroundColor: "#EFEFEF",
+            borderRadius: "10px",
           }}
         >
           <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
             <FontAwesomeIcon
               icon={faXmark}
-              style={{ marginRight: "15px", marginTop: "10px" }}
+              style={{
+                marginRight: "15px",
+                marginTop: "15px",
+                fontSize: "20px",
+                cursor: "pointer",
+              }}
               onClick={() => {
                 setChangeClassName("updateWindowHidden");
                 setTimeout(() => {
@@ -740,11 +768,24 @@ const Detail = () => {
             />
           </div>
 
-          <div>
+          <div style={{ display: "flex", justifyContent: "center" }}>
             <form onSubmit={onSubmitUpdate}>
-              <input type="text" name="money" onChange={onChange} value={money} required />
-              <div>
-                <span>분류</span>
+              <input
+                type="text"
+                name="money"
+                onChange={onChange}
+                value={money}
+                required
+                style={{
+                  fontSize: "25px",
+                  borderBottom: "2px solid #00C68E",
+                  margin: "20px 0px",
+                  backgroundColor: "#EFEFEF",
+                }}
+              />
+              <span style={{ fontSize: "18px", marginLeft: "5px" }}>원</span>
+              <div style={{ marginBottom: "20px", fontSize: "18px" }}>
+                <span style={{ marginRight: "60px" }}>분류</span>
                 <input
                   type="radio"
                   value="income"
@@ -752,8 +793,9 @@ const Detail = () => {
                   onChange={onChangeClassification}
                   checked={checkedType === "income" ? true : false}
                   required
+                  style={{ marginLeft: "0px" }}
                 />
-                <label>수입</label>
+                <label style={{ marginRight: "5px" }}>수입</label>
                 <input
                   type="radio"
                   value="spending"
@@ -764,8 +806,8 @@ const Detail = () => {
                 />
                 <label>지출</label>
               </div>
-              <div>
-                <span>날짜</span>
+              <div style={{ marginBottom: "20px", fontSize: "18px", display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: "60px" }}>날짜</span>
                 <input
                   type="date"
                   min="2020-01-01"
@@ -774,10 +816,11 @@ const Detail = () => {
                   onChange={onChangeDate}
                   value={`${year}-${month < 10 ? `0${month}` : `${month}`}-${day < 10 ? `0${day}` : `${day}`}`}
                   required
+                  style={{ fontWeight: "bold", border: "none", backgroundColor: "#EFEFEF" }}
                 />
               </div>
-              <div>
-                <span>카테고리</span>
+              <div style={{ marginBottom: "20px", fontSize: "18px", display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: "20px" }}>카테고리</span>
                 {classification === "income" ? (
                   <select
                     name="category"
@@ -785,7 +828,13 @@ const Detail = () => {
                     onChange={onChange}
                     value={category}
                     required
-                    style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: "bold",
+                      border: "none",
+                      outline: "0",
+                      backgroundColor: "#EFEFEF",
+                    }}
                   >
                     <option value="">선택하세요</option>
                     <option value="급여">급여</option>
@@ -801,7 +850,13 @@ const Detail = () => {
                     onChange={onChange}
                     value={category}
                     required
-                    style={{ border: "none", borderBottom: "1px solid gray", outline: "0" }}
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: "bold",
+                      border: "none",
+                      outline: "0",
+                      backgroundColor: "#EFEFEF",
+                    }}
                   >
                     <option value="">선택하세요</option>
                     <option value="식비">식비</option>
@@ -824,17 +879,52 @@ const Detail = () => {
                   </select>
                 )}
               </div>
-              <div>
-                <span>메모</span>
-                <input type="text" name="memo" onChange={onChange} value={memo} required />
+              <div style={{ fontSize: "18px", display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: "60px" }}>메모</span>
+                <input
+                  type="text"
+                  name="memo"
+                  onChange={onChange}
+                  value={memo}
+                  required
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    padding: "0px 0px 3px 0px",
+                    backgroundColor: "#EFEFEF",
+                  }}
+                />
               </div>
               <div
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "150px" }}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "70px" }}
               >
-                <button type="button" onClick={onClickDelete}>
+                <button
+                  type="button"
+                  onClick={onClickDelete}
+                  style={{
+                    padding: "18px 20px",
+                    fontSize: "20px",
+                    borderRadius: "5px",
+                    border: "1px solid gray",
+                    cursor: "pointer",
+                  }}
+                >
                   <FontAwesomeIcon icon={faTrashCan} />
                 </button>
-                <button type="submit" style={{ padding: "20px", backgroundColor: "tomato" }}>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "18px",
+                    backgroundColor: "#00C68E",
+                    border: "none",
+                    width: "270px",
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    color: "white",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
                   저장
                 </button>
               </div>

@@ -1,6 +1,5 @@
 import { authService } from "../src/fBase";
 import { signOut } from "firebase/auth";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
