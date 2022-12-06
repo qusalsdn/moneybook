@@ -767,7 +767,7 @@ const Home: NextPage<props> = ({ userObj }) => {
           <div style={{ display: "flex", justifyContent: "center" }}>
             <form onSubmit={onSubmitUpdate}>
               <input
-                type="text"
+                type="number"
                 name="money"
                 onChange={onChange}
                 value={money}
